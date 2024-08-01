@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,13 +39,18 @@ public class TicketService {
         // Fetch tickets assigned to the provided employee
         return ticketRepository.findByEmployee(employee);
     }
+    public Optional<Ticket> findById(String ticketId) {
+        ObjectId objectId = new ObjectId(ticketId);
+        return ticketRepository.findById(objectId);
+    }
     public Map<String, Long> getCompletedTicketsCountByEmployee() {
-        List<Ticket> allTickets = ticketRepository.findAll();
+        List<Ticket> allTickets =ticketRepository.findAll();
         return allTickets.stream()
-                .filter(ticket -> "completed".equals(ticket.getStatus()))
+                .filter(ticket -> "Completed".equals(ticket.getStatus()))
                 .collect(Collectors.groupingBy(
                         ticket -> ticket.getEmployee().getUsername(),
                         Collectors.counting()
                 ));
     }
+
 }

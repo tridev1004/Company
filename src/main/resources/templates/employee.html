@@ -64,6 +64,8 @@
                     <th>Description</th>
                     <th>Task</th>
                     <th>Status</th>
+                    <th>Original Employee</th>
+                    <th>Reassigned</th>
                     <th>Action</th>
                 </tr>
                 </thead>
@@ -73,18 +75,25 @@
                     <td th:text="${ticket.ticketDesc}"></td>
                     <td th:text="${ticket.task}"></td>
                     <td th:text="${ticket.status}"></td>
+                    <td th:text="${ticket.originalEmployee != null ? ticket.originalEmployee.username : 'N/A'}"></td>
+                    <td th:text="${ticket.reassigned ? 'Yes' : 'No'}"></td>
                     <td>
-                        <form th:action="@{/employee/updateTicketStatus}" method="post">
-                            <input type="hidden" name="ticketId" th:value="${ticket.id.toHexString()}"/>
-                            <div class="form-group">
-                                <label for="status">Mark as:</label>
-                                <select class="form-control" id="status" name="status">
-                                    <option value="Not Completed" th:selected="${ticket.status == 'Not Completed'}">Not Completed</option>
-                                    <option value="Completed" th:selected="${ticket.status == 'Completed'}">Completed</option>
-                                </select>
-                            </div>
-                            <button type="submit" class="btn btn-primary mt-3">Update Status</button>
-                        </form>
+                        <div th:if="${ticket.status != 'Completed'}">
+                            <form th:action="@{/employee/updateTicketStatus}" method="post">
+                                <input type="hidden" name="ticketId" th:value="${ticket.id.toHexString()}"/>
+                                <div class="form-group">
+                                    <label for="status">Mark as:</label>
+                                    <select class="form-control" id="status" name="status">
+                                        <option value="Not Completed" th:selected="${ticket.status == 'Not Completed'}">Not Completed</option>
+                                        <option value="Completed" th:selected="${ticket.status == 'Completed'}">Completed</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary mt-3">Update Status</button>
+                            </form>
+                        </div>
+                        <div th:if="${ticket.status == 'Completed'}">
+                            <span>Completed</span>
+                        </div>
                     </td>
                 </tr>
                 </tbody>
@@ -93,8 +102,8 @@
     </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/4Wv1I6yzXlPxfAeEnKkVi07r1kxtKp4fM6MJ9B6Q" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js" integrity="sha384-4iQW9Tk4i2qNwfszFjXtoX9ZmGrrK0GzRZGowwEglku5Wm8FnS1jykL3a8g+f8H" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-X8z8sq/jU4O4xV46iB1jj9Bh+9HSc5GYvVR9zhc49Vmy6n4TMEFSrh6vN/B+cF1H" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" crossorigin="anonymous"></script>
 </body>
 </html>

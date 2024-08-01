@@ -22,4 +22,9 @@ public class Ticket {
     @DBRef
     private User employee;
 
+    @DBRef
+    private User originalEmployee;
+
+    private boolean reassigned;
+
 }

@@ -99,8 +99,12 @@
                     <strong th:text="${ticket.task}"></strong> - Assigned to: <span th:if="${ticket.employee != null}" th:text="${ticket.employee.username}"></span><span th:if="${ticket.employee == null}">N/A</span>
                     <p>Description: <span th:text="${ticket.ticketDesc}"></span></p>
                     <p>Status: <span th:text="${ticket.status}"></span></p>
+                    <p th:if="${ticket.reassigned}">Original Employee: <span th:text="${ticket.originalEmployee.username}"></span></p>
+                    <p th:if="${ticket.reassigned}">Reassigned: Yes</p>
                 </li>
             </ul>
+            <p>JSON Output: <span th:text="${completedTicketsCountJson}"></span></p>
+
             <h5 class="mt-4">Ticket Resolution Stats</h5>
             <canvas id="ticketChart"></canvas>
         </div>
@@ -115,27 +119,23 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js" integrity="sha384-4iQW9Tk4i2qNwfszFjXtoX9ZmGrrK0GzRZGowwEglku5Wm8FnS1jykL3a8g+f8H" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-X8z8sq/jU4O4xV46iB1jj9Bh+9HSc5GYvVR9zhc49Vmy6n4TMEFSrh6vN/B+cF1H" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-    // Render the server-side variable as a JavaScript array
-    var completedTicketsCount =  JSON.parse(/*[[${completedTicketsCountJson}]]*/ '[]');
+<script th:inline="javascript">
 
-    // Check the output in the console to debug
-    console.log(completedTicketsCount);
+    //  Thymeleaf to include JSON data
+    //  var completedTicketsCountJson =  '{"rachit":2,"ananya":5,"vishal":3}';
+    var completedTicketsCountJson = /*[[${completedTicketsCountJson}]]*/ "{}";    var completedTicketsCount = JSON.parse(completedTicketsCountJson);
+    console.log(completedTicketsCount); // Check if data is correctly logged
 
-    // Process the data to create the chart
     var employeeTicketCount = {};
-    completedTicketsCount.forEach(ticket => {
-        var employeeUsername = ticket.employee.username;
-        if (!employeeTicketCount[employeeUsername]) {
-            employeeTicketCount[employeeUsername] = { resolved: 0, unresolved: 0 };
-        }
-        if (ticket.status === 'completed') {
-            employeeTicketCount[employeeUsername].resolved++;
-        } else {
-            employeeTicketCount[employeeUsername].unresolved++;
-        }
-    });
 
+    // Initialize employeeTicketCount
+    for (var employee in completedTicketsCount) {
+        if (completedTicketsCount.hasOwnProperty(employee)) {
+            employeeTicketCount[employee] = { resolved: completedTicketsCount[employee], unresolved: 0 };
+        }
+    }
+
+    // Prepare data for the chart
     var labels = Object.keys(employeeTicketCount);
     var resolvedData = labels.map(label => employeeTicketCount[label].resolved);
     var unresolvedData = labels.map(label => employeeTicketCount[label].unresolved);
